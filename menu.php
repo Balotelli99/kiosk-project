@@ -1,0 +1,98 @@
+<?php 
+// Verbinding direct in het bestand voor de zekerheid
+$conn = new mysqli("localhost", "root", "", "kioskv2");
+if ($conn->connect_error) { die("Fout: " . $conn->connect_error); }
+$conn->set_charset("utf8mb4");
+
+$sql = "SELECT p.product_id, p.name, p.description, p.price, i.filename 
+        FROM products p 
+        LEFT JOIN images i ON p.image_id = i.image_id 
+        WHERE p.available = 1";
+$result = $conn->query($sql);
+?>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Menu - Happy Herbivore</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* De rode cirkel voor de winkelwagen uit het filmpje */
+        .cart-badge {
+            position: absolute; top: -5px; right: -8px;
+            background: #e74c3c; color: white;
+            border-radius: 50%; padding: 2px 7px;
+            font-size: 12px; font-weight: bold;
+            display: none; border: 2px solid white;
+        }
+        .navBtn { position: relative; }
+    </style>
+</head>
+<body>
+    <main class="kiosk">
+        <div class="kiosk__device">
+            <div class="screen">
+                <div class="screen__bg bg-products"></div>
+                <div class="screen__content screen__content--flush">
+                    <div class="topBar">
+                        <img class="topBar__logo" src="images/logo.webp">
+                        <div class="titlePill">BURGERS</div>
+                    </div>
+
+                    <div class="layoutProducts">
+                        <div class="cats">
+                            <button class="catBtn" aria-pressed="true">
+                                <img src="images/icon-coffee.png"> <span>Burgers</span>
+                            </button>
+                        </div>
+
+                        <div class="productsArea scrollArea">
+                            <div class="grid">
+                                <?php while($row = $result->fetch_assoc()): ?>
+                                    <div class="card">
+                                        <img class="card__img" src="images/<?php echo $row['filename']; ?>">
+                                        <div class="card__title"><?php echo $row['name']; ?></div>
+                                        <div class="card__desc"><?php echo $row['description']; ?></div>
+                                        <div class="card__meta">
+                                            <div class="card__price">€<?php echo number_format($row['price'], 2, ',', '.'); ?></div>
+                                            <button class="circleBtn" onclick="addToCart(<?php echo $row['product_id']; ?>)">+</button>
+                                        </div>
+                                    </div>
+                                <?php endwhile; ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bottomNav">
+                        <a href="index.php" class="navBtn"><img src="images/icon-home.png"></a>
+                        <button class="navBtn" onclick="location.href='cart.php'">
+                            <img src="images/icon-cart.png">
+                            <span id="cart-count" class="cart-badge">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let cart = JSON.parse(sessionStorage.getItem('kiosk_cart')) || [];
+        updateUI();
+
+        function addToCart(id) {
+            cart.push(id);
+            sessionStorage.setItem('kiosk_cart', JSON.stringify(cart));
+            updateUI();
+        }
+
+        function updateUI() {
+            const badge = document.getElementById('cart-count');
+            if(cart.length > 0) {
+                badge.innerText = cart.length;
+                badge.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

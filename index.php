@@ -1,39 +1,48 @@
-<?php
-include("includes/db.php");
-
-$sql = "SELECT * FROM products";
-$result = $conn->query($sql);
-?>
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="nl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Happy Herbivore Kiosk</title>
-
-    <link rel="stylesheet" href="./css/styles.css" />
-  </head>
-
-  <body>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
     <main class="kiosk">
-      <div class="kiosk__device">
+        <div class="kiosk__device">
+            <div id="screen" class="screen">
+                <div class="screen__bg bg-start"></div>
+                
+                <div class="veggies" style="background-image: url('images/image.png');" aria-hidden="true"></div>
 
-        <div id="screen" class="screen">
+                <div class="screen__content">
+                    <div class="brand">
+                        <div class="brand__bubble">
+                            <img class="brand__logo" src="images/logo.webp" alt="Logo">
+                        </div>
+                    </div>
 
-          <?php while($row = $result->fetch_assoc()): ?>
+                    <div class="hero">
+                        <img src="images/hero-food-drinks.png" alt="Hero">
+                    </div>
 
-            <div class="product-card">
-              <h2><?= $row['name']; ?></h2>
-              <p>€<?= $row['price']; ?></p>
+                    <div class="pillRow">
+                        <a href="menu.php" class="btn btn--green" style="text-decoration:none;">HIER ETEN</a>
+                        <a href="menu.php" class="btn btn--green" style="text-decoration:none;">MEENEMEN</a>
+                    </div>
+
+                    <div class="langRow">
+                        <div class="langBtn">
+                            <img src="images/flag-nl.png" alt="NL">
+                            <span>NEDERLANDS</span>
+                        </div>
+                        <div class="langBtn">
+                            <img src="images/flag-en.png" alt="EN">
+                            <span>ENGLISH</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-          <?php endwhile; ?>
-
         </div>
-
-      </div>
     </main>
-
-  </body>
+</body>
 </html>
