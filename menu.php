@@ -1,9 +1,19 @@
 <?php 
-// Verbinding direct in het bestand voor de zekerheid
-$conn = new mysqli("localhost", "root", "", "kioskv2");
-if ($conn->connect_error) { die("Fout: " . $conn->connect_error); }
+// 1. Directe verbinding maken (vervangt include 'db.php')
+$host = "localhost";
+$user = "root";
+$password = "";
+$database = "kioskv2";
+
+$conn = new mysqli($host, $user, $password, $database);
+
+// Check de verbinding
+if ($conn->connect_error) {
+    die("Database verbinding mislukt: " . $conn->connect_error);
+}
 $conn->set_charset("utf8mb4");
 
+// 2. Producten ophalen
 $sql = "SELECT p.product_id, p.name, p.description, p.price, i.filename 
         FROM products p 
         LEFT JOIN images i ON p.image_id = i.image_id 
@@ -14,18 +24,10 @@ $result = $conn->query($sql);
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Menu - Happy Herbivore</title>
     <link rel="stylesheet" href="css/style.css">
     <style>
-        /* De rode cirkel voor de winkelwagen uit het filmpje */
-        .cart-badge {
-            position: absolute; top: -5px; right: -8px;
-            background: #e74c3c; color: white;
-            border-radius: 50%; padding: 2px 7px;
-            font-size: 12px; font-weight: bold;
-            display: none; border: 2px solid white;
-        }
+        .cart-badge { position: absolute; top: -5px; right: -8px; background: red; color: white; border-radius: 50%; padding: 2px 7px; font-size: 12px; display: none; border: 2px solid white; }
         .navBtn { position: relative; }
     </style>
 </head>
@@ -39,14 +41,8 @@ $result = $conn->query($sql);
                         <img class="topBar__logo" src="images/logo.webp">
                         <div class="titlePill">BURGERS</div>
                     </div>
-
                     <div class="layoutProducts">
-                        <div class="cats">
-                            <button class="catBtn" aria-pressed="true">
-                                <img src="images/icon-coffee.png"> <span>Burgers</span>
-                            </button>
-                        </div>
-
+                        <div class="cats"><button class="catBtn" aria-pressed="true"><img src="images/icon-coffee.png"><span>Burgers</span></button></div>
                         <div class="productsArea scrollArea">
                             <div class="grid">
                                 <?php while($row = $result->fetch_assoc()): ?>
@@ -63,36 +59,19 @@ $result = $conn->query($sql);
                             </div>
                         </div>
                     </div>
-
                     <div class="bottomNav">
                         <a href="index.php" class="navBtn"><img src="images/icon-home.png"></a>
-                        <button class="navBtn" onclick="location.href='cart.php'">
-                            <img src="images/icon-cart.png">
-                            <span id="cart-count" class="cart-badge">0</span>
-                        </button>
+                        <button class="navBtn" onclick="location.href='cart.php'"><img src="images/icon-cart.png"><span id="cart-count" class="cart-badge">0</span></button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
     <script>
         let cart = JSON.parse(sessionStorage.getItem('kiosk_cart')) || [];
         updateUI();
-
-        function addToCart(id) {
-            cart.push(id);
-            sessionStorage.setItem('kiosk_cart', JSON.stringify(cart));
-            updateUI();
-        }
-
-        function updateUI() {
-            const badge = document.getElementById('cart-count');
-            if(cart.length > 0) {
-                badge.innerText = cart.length;
-                badge.style.display = 'block';
-            }
-        }
+        function addToCart(id) { cart.push(id); sessionStorage.setItem('kiosk_cart', JSON.stringify(cart)); updateUI(); }
+        function updateUI() { const b = document.getElementById('cart-count'); if(cart.length > 0) { b.innerText = cart.length; b.style.display = 'block'; } }
     </script>
 </body>
 </html>
