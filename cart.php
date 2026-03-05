@@ -1,17 +1,7 @@
 <?php 
-// 1. Directe verbinding met de database
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "kioskv2";
+require_once 'includes/db.php';
 
-$conn = new mysqli($host, $user, $password, $database);
-if ($conn->connect_error) {
-    die("Database verbinding mislukt: " . $conn->connect_error);
-}
-$conn->set_charset("utf8mb4");
-
-// 2. Producten ophalen voor het overzicht in de winkelwagen
+// Producten ophalen voor het overzicht
 $res = $conn->query("SELECT p.product_id, p.name, p.price, i.filename FROM products p LEFT JOIN images i ON p.image_id = i.image_id");
 $all_products = [];
 while($row = $res->fetch_assoc()) { 
@@ -25,32 +15,42 @@ while($row = $res->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Winkelwagen - Happy Herbivore</title>
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .cart-container { background: #8cd003; height: 100vh; padding: 20px; display: flex; flex-direction: column; border-radius: 40px; }
-        .item-card { background: #d4cf65; border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; color: #1a3c34; }
-        .item-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; background: white; }
-        .btn-checkout { background: #6c4ab6; color: white; border-radius: 30px; padding: 15px; border: none; font-weight: 800; width: 100%; cursor: pointer; font-size: 18px; }
-        .total-section { text-align: center; font-weight: 800; margin: 20px 0; font-size: 20px; color: #1a3c34; }
-    </style>
 </head>
 <body>
     <main class="kiosk">
         <div class="kiosk__device">
             <div class="screen">
-                <div class="cart-container">
-                    <h2 style="text-align:center; color:#1a3c34;" id="items-count">0 items in cart</h2>
+                <div class="screen__bg bg-cart"></div>
+                <div class="screen__content screen__content--flush">
                     
-                    <div id="cart-list" style="flex:1; overflow-y:auto; padding: 5px;">
-                        </div>
-
-                    <div class="total-section">
-                        Total: <span style="font-size: 14px; opacity: 0.7;">EURO:</span> <span id="total-price">€0,00</span>
+                    <div class="cartHeader">
+                        <img class="topBar__logo" src="images/logo.webp">
+                        <div class="cartHeader__title" id="items-count">0 items in cart</div>
                     </div>
 
-                    <div style="padding-bottom: 20px;">
-                        <button onclick="checkout()" class="btn-checkout">Checkout</button>
-                        <a href="menu.php" style="text-align:center; display:block; color:white; margin-top:15px; text-decoration: none; font-weight: bold;">Back to Menu</a>
+                    <div class="scrollArea cartMain">
+                        <div class="cartList" id="cart-list">
+                            </div>
                     </div>
+
+                    <div class="totalRow">
+                        <span>Total:</span>
+                        <span class="mutedSmall">EURO:</span>
+                        <span id="total-price">€0,00</span>
+                    </div>
+
+                    <div class="actions">
+                        <button onclick="checkout()" class="btn btn--purple">Checkout</button>
+                        <button onclick="location.href='menu.php'" class="btn btn--orange">Back to Home</button>
+                    </div>
+
+                    <div class="bottomNav">
+                        <a href="index.php" class="navBtn"><img src="images/icon-home.png"></a>
+                        <button class="navBtn" onclick="location.href='cart.php'">
+                            <img src="images/icon-cart.png">
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -65,6 +65,7 @@ while($row = $res->fetch_assoc()) {
             let total = 0;
             list.innerHTML = '';
 
+            // Tellen hoeveel van elk product
             const counts = {};
             cartIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
 
@@ -73,35 +74,55 @@ while($row = $res->fetch_assoc()) {
                 if(!p) return;
                 const subtotal = p.price * counts[id];
                 total += subtotal;
+
                 list.innerHTML += `
-                    <div class="item-card">
-                        <img src="images/${p.filename}" class="item-img">
-                        <div style="flex:1">
-                            <b>${p.name}</b><br>
-                            €${parseFloat(p.price).toFixed(2).replace('.', ',')} (x${counts[id]})
+                    <div class="cartItem">
+                        <img src="images/${p.filename}" class="cartItem__img">
+                        <div class="cartItem__info">
+                            <p class="cartItem__name">${p.name}</p>
+                            <p class="cartItem__price">${parseFloat(p.price).toFixed(2)} euro</p>
+                            <div class="qty">
+                                <button class="removeBtn" onclick="changeQty(${id}, -1)">⊖</button>
+                                <span class="qty__num">${counts[id]}</span>
+                                <button class="removeBtn" onclick="changeQty(${id}, 1)" style="color:var(--purple)">⊕</button>
+                            </div>
                         </div>
-                        <div style="font-weight:bold">€${subtotal.toFixed(2).replace('.', ',')}</div>
+                        <button class="removeBtn" onclick="removeItem(${id})">ⓧ</button>
                     </div>`;
             });
 
             document.getElementById('total-price').innerText = '€' + total.toFixed(2).replace('.', ',');
             document.getElementById('items-count').innerText = cartIds.length + " items in cart";
+            sessionStorage.setItem('kiosk_cart', JSON.stringify(cartIds));
+        }
+
+        function changeQty(id, delta) {
+            if (delta === 1) {
+                cartIds.push(id);
+            } else {
+                const index = cartIds.indexOf(id);
+                if (index > -1) cartIds.splice(index, 1);
+            }
+            renderCart();
+        }
+
+        function removeItem(id) {
+            cartIds = cartIds.filter(itemId => itemId !== id);
+            renderCart();
         }
 
         async function checkout() {
             if (cartIds.length === 0) return alert("Je mandje is leeg!");
-            
             try {
                 const response = await fetch('save_order.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ items: cartIds })
                 });
-
                 const result = await response.json();
-
                 if (result.success) {
                     sessionStorage.setItem('order_number', result.pickup_number);
+                    sessionStorage.removeItem('kiosk_cart'); // Leeg maken na succes
                     window.location.href = 'thanks.php';
                 } else {
                     alert("Fout: " + result.error);
