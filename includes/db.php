@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
-$user = "root";
-$password = "";
-$database = "kioskv2";
+$user = "u240787_kiosk-project";
+$password = "BtcXPj8xnqfxRyhfwTE8";
+$database = "u240787_kiosk-project";
 
 $conn = new mysqli($host, $user, $password, $database);
 if ($conn->connect_error) {
