@@ -1,8 +1,10 @@
+<?php require_once 'includes/lang.php'; ?>
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google" content="notranslate">
     <title>Happy Herbivore Kiosk</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -18,12 +20,18 @@
                     </div>
                     <div class="hero"><img src="images/hero-food-drinks.png"></div>
                     <div class="pillRow">
-                        <a href="menu.php" class="btn btn--green" style="text-decoration:none;">HIER ETEN</a>
-                        <a href="menu.php" class="btn btn--green" style="text-decoration:none;">MEENEMEN</a>
+                        <a href="menu.php?lang=<?php echo $lang; ?>" class="btn btn--green" style="text-decoration:none;"><?php echo t('eat_here'); ?></a>
+                        <a href="menu.php?lang=<?php echo $lang; ?>" class="btn btn--green" style="text-decoration:none;"><?php echo t('take_away'); ?></a>
                     </div>
                     <div class="langRow">
-                        <div class="langBtn"><img src="images/flag-nl.png"><span>NEDERLANDS</span></div>
-                        <div class="langBtn"><img src="images/flag-en.png"><span>ENGLISH</span></div>
+                        <a href="index.php?lang=nl" class="langBtn" style="text-decoration:none;">
+                            <img src="images/flag-nl.png">
+                            <span>NEDERLANDS</span>
+                        </a>
+                        <a href="index.php?lang=en" class="langBtn" style="text-decoration:none;">
+                            <img src="images/flag-en.png">
+                            <span>ENGLISH</span>
+                        </a>
                     </div>
                 </div>
             </div>

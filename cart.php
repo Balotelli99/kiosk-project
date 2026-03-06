@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once 'includes/lang.php';
 require_once 'includes/db.php';
 
 // Producten ophalen voor het overzicht
@@ -9,10 +10,11 @@ while($row = $res->fetch_assoc()) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google" content="notranslate">
     <title>Winkelwagen - Happy Herbivore</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -25,7 +27,7 @@ while($row = $res->fetch_assoc()) {
                     
                     <div class="cartHeader">
                         <img class="topBar__logo" src="images/logo.webp">
-                        <div class="cartHeader__title" id="items-count">0 items in cart</div>
+                        <div class="cartHeader__title" id="items-count">0 <?php echo t('items_in_cart'); ?></div>
                     </div>
 
                     <div class="scrollArea cartMain">
@@ -34,19 +36,19 @@ while($row = $res->fetch_assoc()) {
                     </div>
 
                     <div class="totalRow">
-                        <span>Total:</span>
-                        <span class="mutedSmall">EURO:</span>
+                        <span><?php echo t('total'); ?></span>
+                        <span class="mutedSmall"><?php echo t('euro_label'); ?></span>
                         <span id="total-price">€0,00</span>
                     </div>
 
                     <div class="actions">
-                        <button onclick="checkout()" class="btn btn--purple">Checkout</button>
-                        <button onclick="location.href='menu.php'" class="btn btn--orange">Back to Home</button>
+                        <button onclick="checkout()" class="btn btn--purple"><?php echo t('checkout_btn'); ?></button>
+                        <button onclick="location.href='menu.php?lang=<?php echo $lang; ?>'" class="btn btn--orange"><?php echo t('back_to_menu'); ?></button>
                     </div>
 
                     <div class="bottomNav">
-                        <a href="index.php" class="navBtn"><img src="images/icon-home.png"></a>
-                        <button class="navBtn" onclick="location.href='cart.php'">
+                        <a href="index.php?lang=<?php echo $lang; ?>" class="navBtn"><img src="images/icon-home.png"></a>
+                        <button class="navBtn" onclick="location.href='cart.php?lang=<?php echo $lang; ?>'">
                             <img src="images/icon-cart.png">
                         </button>
                     </div>
@@ -92,7 +94,7 @@ while($row = $res->fetch_assoc()) {
             });
 
             document.getElementById('total-price').innerText = '€' + total.toFixed(2).replace('.', ',');
-            document.getElementById('items-count').innerText = cartIds.length + " items in cart";
+            document.getElementById('items-count').innerText = cartIds.length + " <?php echo t('items_in_cart'); ?>";
             sessionStorage.setItem('kiosk_cart', JSON.stringify(cartIds));
         }
 
@@ -112,7 +114,7 @@ while($row = $res->fetch_assoc()) {
         }
 
         async function checkout() {
-            if (cartIds.length === 0) return alert("Je mandje is leeg!");
+            if (cartIds.length === 0) return alert("<?php echo t('cart_empty'); ?>");
             try {
                 const response = await fetch('save_order.php', {
                     method: 'POST',
@@ -122,8 +124,18 @@ while($row = $res->fetch_assoc()) {
                 const result = await response.json();
                 if (result.success) {
                     sessionStorage.setItem('order_number', result.pickup_number);
-                    sessionStorage.removeItem('kiosk_cart'); // Leeg maken na succes
-                    window.location.href = 'thanks.php';
+                    // Save order summary for the receipt
+                    const counts = {};
+                    cartIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
+                    const summary = Object.keys(counts).map(id => ({
+                        name: allProducts[id]?.name || id,
+                        qty: counts[id],
+                        price: allProducts[id]?.price || 0
+                    }));
+                    sessionStorage.setItem('order_items', JSON.stringify(summary));
+                    sessionStorage.setItem('order_time', new Date().toISOString());
+                    sessionStorage.removeItem('kiosk_cart');
+                    window.location.href = 'thanks.php?lang=<?php echo $lang; ?>';
                 } else {
                     alert("Fout: " + result.error);
                 }

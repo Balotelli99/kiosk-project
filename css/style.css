@@ -4,7 +4,7 @@
   --green: #8cd003;
   --lightGreen: #deff78;
   --darkBlue: #053631;
-  --purple: #6b45c6;
+  
 
   --bg: #e9e9e9;
   --card: rgba(255, 255, 255, 0.9);
@@ -59,13 +59,13 @@ button {
   min-height: 100%;
   display: grid;
   place-items: center;
-  padding: 18px;
+  padding: 0;
 }
 
 .kiosk__device {
-  width: min(430px, 96vw);
-  height: min(860px, 96vh);
-  border-radius: var(--radius-xl);
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
   overflow: hidden;
   background: white;
   box-shadow: var(--shadow);
@@ -124,7 +124,7 @@ button {
 }
 
 .bg-thanks {
-  background: linear-gradient(180deg, #6a3fc2 0%, #d37cff 100%);
+  background: linear-gradient(180deg, var(--orange) 0%, var(--lightOrange) 100%);
 }
 
 .veggies {
@@ -187,9 +187,9 @@ button {
   appearance: none;
   border: 0;
   border-radius: 999px;
-  min-height: var(--touch);
-  padding: 12px 18px;
-  font-size: 14px;
+  min-height: clamp(48px, 7vh, 80px);
+  padding: clamp(10px, 1.5vh, 18px) clamp(16px, 3vw, 36px);
+  font-size: clamp(14px, 1.8vw, 22px);
   font-weight: 800;
   letter-spacing: 0.4px;
   cursor: pointer;
@@ -205,8 +205,8 @@ button {
 }
 
 .btn--purple {
-  background: var(--purple);
-  color: white;
+  background: var(--orange);
+  color: var(--darkBlue);
 }
 
 .btn--orange {
@@ -252,14 +252,14 @@ button {
 
 .topBar {
   display: grid;
-  grid-template-columns: 64px 1fr 64px;
+  grid-template-columns: clamp(80px, 11vw, 130px) 1fr clamp(130px, 17vw, 190px);
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px 0;
+  gap: clamp(8px, 1.5vw, 20px);
+  padding: clamp(10px, 1.5vh, 20px) clamp(12px, 2vw, 24px) 0;
 }
 
 .topBar__logo {
-  width: 58px;
+  width: clamp(60px, 10vw, 120px);
   height: auto;
 }
 
@@ -267,8 +267,8 @@ button {
   justify-self: end;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding-right: 4px;
+  gap: clamp(8px, 1.5vw, 18px);
+  padding-right: clamp(4px, 0.8vw, 10px);
 }
 
 .langMiniBtn {
@@ -276,13 +276,14 @@ button {
   background: transparent;
   padding: 0;
   cursor: pointer;
+  display: block;
 }
 
 .langMiniBtn img {
-  width: 26px;
-  height: 18px;
+  width: clamp(40px, 6.5vw, 80px);
+  height: clamp(28px, 4.5vw, 54px);
   object-fit: cover;
-  border-radius: 5px;
+  border-radius: clamp(6px, 1vw, 12px);
   box-shadow: 0 10px 18px rgba(0, 0, 0, 0.16);
   outline: 3px solid transparent;
 }
@@ -293,13 +294,13 @@ button {
 
 .titlePill {
   justify-self: center;
-  padding: 10px 24px;
+  padding: clamp(10px, 1.5vh, 20px) clamp(20px, 3.5vw, 48px);
   background: var(--orange);
   border-radius: 999px;
   font-family: var(--font-heading);
   font-weight: 800;
   letter-spacing: 0.6px;
-  font-size: 20px;
+  font-size: clamp(20px, 3.2vw, 40px);
   color: var(--darkBlue);
 }
 
@@ -307,106 +308,107 @@ button {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 76px 1fr;
-  gap: 12px;
-  padding: 0 10px;
+  grid-template-columns: clamp(100px, 15vw, 180px) 1fr;
+  gap: clamp(10px, 2vw, 24px);
+  padding: 0 clamp(10px, 2vw, 24px);
 }
 
 .cats {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 18px);
   align-items: stretch;
-  padding-top: 10px;
+  padding-top: clamp(8px, 1.5vw, 18px);
 }
 
 .productsArea {
   min-height: 0;
-  padding-right: 2px;
+  padding-right: 4px;
 }
 
 .catBtn {
   border: 0;
   border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.55);
-  padding: 10px 8px;
+  background: #053631;
+  padding: clamp(10px, 1.5vw, 18px) clamp(6px, 1vw, 12px);
   display: grid;
   place-items: center;
-  gap: 6px;
+  gap: clamp(4px, 0.8vw, 10px);
   cursor: pointer;
 }
 
 .catBtn[aria-pressed="true"] {
-  background: rgba(255, 255, 255, 0.82);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+  background: #0a5a52;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
 .catBtn img {
-  width: 38px;
-  height: 38px;
+  width: clamp(32px, 5.5vw, 70px);
+  height: clamp(32px, 5.5vw, 70px);
   object-fit: contain;
 }
 
 .catBtn span {
-  font-size: 10px;
+  font-size: clamp(11px, 1.4vw, 18px);
   font-weight: 800;
-  color: var(--darkBlue);
+  color: #ffffff;
   line-height: 1.1;
   text-align: center;
 }
 
 .grid {
-  padding-top: 10px;
+  padding-top: clamp(8px, 1.5vw, 18px);
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(10px, 2vw, 24px);
 }
 
 .card {
   background: rgba(255, 255, 255, 0.92);
-  border-radius: 14px;
-  padding: 10px 10px 12px;
+  border-radius: clamp(12px, 2vw, 24px);
+  padding: clamp(12px, 2vw, 24px);
   position: relative;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
-  min-height: 142px;
+  min-height: clamp(180px, 25vh, 300px);
 }
 
 .card__img {
   width: 100%;
-  height: 56px;
-  object-fit: contain;
+  height: clamp(100px, 14vh, 180px);
+  object-fit: cover;
+  border-radius: clamp(8px, 1.2vw, 14px);
 }
 
 .card__title {
-  margin: 6px 0 2px;
+  margin: clamp(8px, 1.2vw, 16px) 0 clamp(4px, 0.6vw, 8px);
   font-weight: 900;
-  font-size: 12px;
+  font-size: clamp(14px, 2vw, 26px);
   color: var(--orange);
 }
 
 .card__desc {
-  margin: 0 0 8px;
-  font-size: 9.5px;
-  line-height: 1.15;
+  margin: 0 0 clamp(8px, 1.5vw, 18px);
+  font-size: clamp(11px, 1.4vw, 18px);
+  line-height: 1.3;
   color: var(--muted);
-  min-height: 26px;
+  min-height: 2.6em;
 }
 
 .card__meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: clamp(6px, 1vw, 14px);
 }
 
 .card__price {
   font-weight: 900;
-  font-size: 11px;
+  font-size: clamp(14px, 2vw, 26px);
 }
 
 .circleBtn {
-  width: 26px;
-  height: 26px;
+  width: clamp(34px, 4.5vw, 58px);
+  height: clamp(34px, 4.5vw, 58px);
   border-radius: 999px;
   border: 2px solid rgba(5, 54, 49, 0.45);
   background: rgba(255, 255, 255, 0.8);
@@ -414,100 +416,103 @@ button {
   place-items: center;
   cursor: pointer;
   font-weight: 900;
+  font-size: clamp(16px, 2.5vw, 28px);
   line-height: 1;
 }
 
 .bottomNav {
-  height: 82px;
+  height: clamp(70px, 10vh, 150px);
   background: rgba(140, 208, 3, 0.98);
   display: grid;
   grid-template-columns: 1fr 1fr;
   place-items: center;
-  padding: 10px 48px 14px;
+  padding: clamp(8px, 1.5vh, 20px) clamp(40px, 8vw, 100px) clamp(10px, 2vh, 24px);
   flex: 0 0 auto;
 }
 
 .navBtn {
   border: 0;
   background: transparent;
-  padding: 8px;
-  border-radius: 18px;
+  padding: clamp(6px, 1.2vw, 14px);
+  border-radius: 24px;
   cursor: pointer;
   position: relative;
 }
 
 .navBtn img {
-  width: 46px;
-  height: 46px;
+  width: clamp(42px, 7vw, 90px);
+  height: clamp(42px, 7vw, 90px);
   object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(13%) sepia(51%) saturate(486%) hue-rotate(130deg) brightness(95%);
 }
 
 .badge {
   position: absolute;
-  top: 2px;
+  top: 4px;
   right: 0px;
-  min-width: 22px;
-  height: 22px;
+  min-width: clamp(22px, 3.5vw, 40px);
+  height: clamp(22px, 3.5vw, 40px);
   border-radius: 999px;
   background: var(--orange);
   color: var(--darkBlue);
   display: grid;
   place-items: center;
-  font-size: 12px;
+  font-size: clamp(12px, 1.8vw, 22px);
   font-weight: 900;
-  padding: 0 6px;
+  padding: 0 clamp(4px, 0.8vw, 10px);
 }
 
 .cartHeader {
-  padding: 8px 12px 0;
+  padding: clamp(6px, 1.2vh, 12px) clamp(10px, 2vw, 20px) 0;
   display: grid;
-  grid-template-columns: 64px 1fr 64px;
+  grid-template-columns: clamp(60px, 10vw, 120px) 1fr clamp(60px, 10vw, 120px);
   align-items: center;
 }
 
 .cartHeader__title {
   justify-self: center;
-  font-size: 18px;
+  font-size: clamp(16px, 2.2vw, 28px);
   font-weight: 900;
 }
 
 .cartList {
-  padding: 0 12px;
+  padding: 0 clamp(10px, 2vw, 20px);
   display: grid;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 16px);
 }
 
 .cartMain {
-  padding-top: 8px;
+  padding-top: clamp(6px, 1vh, 12px);
 }
 
 .cartItem {
   background: rgba(255, 177, 129, 0.55);
-  border-radius: 16px;
-  padding: 10px 10px;
+  border-radius: clamp(12px, 2vw, 20px);
+  padding: clamp(8px, 1.5vw, 16px);
   display: grid;
-  grid-template-columns: 54px 1fr auto;
-  gap: 10px;
+  grid-template-columns: clamp(50px, 8vw, 90px) 1fr auto;
+  gap: clamp(8px, 1.5vw, 16px);
   align-items: center;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
 }
 
 .cartItem__img {
-  width: 54px;
-  height: 54px;
+  width: clamp(50px, 8vw, 90px);
+  height: clamp(50px, 8vw, 90px);
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: clamp(8px, 1.2vw, 14px);
   background: rgba(255, 255, 255, 0.65);
 }
 
 .cartItem__name {
   font-weight: 900;
   margin: 0;
+  font-size: clamp(13px, 1.8vw, 22px);
 }
 
 .cartItem__price {
   margin: 2px 0 0;
-  font-size: 12px;
+  font-size: clamp(11px, 1.4vw, 18px);
   color: rgba(5, 54, 49, 0.7);
   font-weight: 700;
 }
@@ -515,60 +520,64 @@ button {
 .qty {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: clamp(6px, 1vw, 12px);
 }
 
 .qty__num {
-  min-width: 18px;
+  min-width: clamp(18px, 2.5vw, 30px);
   text-align: center;
   font-weight: 900;
+  font-size: clamp(14px, 2vw, 24px);
 }
 
 .removeBtn {
   border: 0;
   background: transparent;
   cursor: pointer;
-  padding: 4px;
-  margin-left: 6px;
-  font-size: 18px;
+  padding: clamp(4px, 0.8vw, 8px);
+  margin-left: clamp(4px, 0.8vw, 8px);
+  font-size: clamp(16px, 2.5vw, 30px);
   font-weight: 900;
   color: rgba(5, 54, 49, 0.7);
 }
 
 .totalRow {
-  margin-top: 4px;
+  margin-top: clamp(4px, 0.8vh, 10px);
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 16px);
   align-items: baseline;
   font-weight: 900;
-  padding: 6px 12px 0;
+  font-size: clamp(16px, 2.2vw, 28px);
+  padding: clamp(6px, 1vh, 12px) clamp(10px, 2vw, 20px) 0;
 }
 
 .actions {
   display: grid;
-  gap: 12px;
-  padding: 10px 26px 0;
+  gap: clamp(8px, 1.5vw, 16px);
+  padding: clamp(8px, 1.5vh, 16px) clamp(16px, 4vw, 50px) 0;
 }
 
 .thanksWrap {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 22px 18px 12px;
+  justify-content: flex-start;
+  gap: clamp(10px, 1.8vh, 20px);
+  padding: clamp(14px, 2.5vh, 30px) clamp(14px, 2.5vw, 30px);
 }
 
 .checkBubble {
-  width: 62px;
-  height: 62px;
+  width: clamp(50px, 7vh, 80px);
+  height: clamp(50px, 7vh, 80px);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.92);
   display: grid;
   place-items: center;
-  font-size: 34px;
+  font-size: clamp(24px, 4vh, 44px);
   font-weight: 900;
   color: var(--darkBlue);
   box-shadow: 0 16px 26px rgba(0, 0, 0, 0.15);
@@ -581,25 +590,26 @@ button {
 
 .thanksText h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: clamp(16px, 2.5vw, 28px);
   font-weight: 900;
 }
 
 .thanksText p {
   margin: 6px 0 0;
   font-weight: 700;
+  font-size: clamp(13px, 1.8vw, 22px);
 }
 
 .orderNo {
-  width: 240px;
-  height: 140px;
+  width: clamp(160px, 25vw, 280px);
+  height: clamp(80px, 12vh, 150px);
   border-radius: 14px;
   background: rgba(255, 177, 129, 0.92);
   display: grid;
   place-items: center;
-  font-size: 64px;
+  font-size: clamp(40px, 7vw, 80px);
   font-weight: 1000;
-  color: var(--orange);
+  color: var(--purple);
   box-shadow: 0 18px 28px rgba(0, 0, 0, 0.18);
 }
 
@@ -614,24 +624,12 @@ button {
   font-weight: 700;
 }
 
-@media (max-width: 380px) {
-  .kiosk__device {
-    width: min(380px, 98vw);
-  }
+@media (max-width: 480px) {
   .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
-  .titlePill {
-    font-size: 18px;
-    padding: 8px 18px;
-  }
-  .bottomNav {
-    padding: 8px 34px 12px;
-    height: 74px;
-  }
-  .navBtn img {
-    width: 42px;
-    height: 42px;
+  .layoutProducts {
+    grid-template-columns: clamp(80px, 20vw, 110px) 1fr;
   }
 }
 
@@ -651,3 +649,4 @@ button {
     height: 40px;
   }
 }
+
