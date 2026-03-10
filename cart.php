@@ -116,6 +116,19 @@ while($row = $res->fetch_assoc()) {
         async function checkout() {
             if (cartIds.length === 0) return alert("<?php echo t('cart_empty'); ?>");
             try {
+                // First, build order summary for receipt
+                const counts = {};
+                cartIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
+                const summary = Object.keys(counts).map(id => ({
+                    name: allProducts[id]?.name || id,
+                    qty: counts[id],
+                    price: allProducts[id]?.price || 0
+                }));
+                
+                // Calculate total
+                let total = 0;
+                summary.forEach(item => total += (item.price * item.qty));
+
                 const response = await fetch('save_order.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -124,16 +137,12 @@ while($row = $res->fetch_assoc()) {
                 const result = await response.json();
                 if (result.success) {
                     sessionStorage.setItem('order_number', result.pickup_number);
-                    // Save order summary for the receipt
-                    const counts = {};
-                    cartIds.forEach(id => counts[id] = (counts[id] || 0) + 1);
-                    const summary = Object.keys(counts).map(id => ({
-                        name: allProducts[id]?.name || id,
-                        qty: counts[id],
-                        price: allProducts[id]?.price || 0
-                    }));
                     sessionStorage.setItem('order_items', JSON.stringify(summary));
                     sessionStorage.setItem('order_time', new Date().toISOString());
+                    
+                    // Print receipt via USB
+                    await printReceiptUSB(result.pickup_number, summary, total);
+                    
                     sessionStorage.removeItem('kiosk_cart');
                     window.location.href = 'thanks.php?lang=<?php echo $lang; ?>';
                 } else {
@@ -141,6 +150,56 @@ while($row = $res->fetch_assoc()) {
                 }
             } catch (e) {
                 alert("Kon geen verbinding maken met de server.");
+            }
+        }
+
+        // USB Bonprinter functie
+        async function printReceiptUSB(pickupNumber, items, total) {
+            try {
+                if (!navigator.usb) {
+                    console.log('WebUSB niet ondersteund, geen bon geprint');
+                    return;
+                }
+
+                // Request USB device (Xprinter vendor ID: 0x0483)
+                const device = await navigator.usb.requestDevice({
+                    filters: [{ vendorId: 0x0483 }]
+                });
+
+                await device.open();
+                await device.selectConfiguration(1);
+                await device.claimInterface(0);
+
+                // Build receipt text
+                let receipt = "\x1B\x40";  // Initialize
+                receipt += "\n\n";
+                receipt += "\x1B\x61\x01";  // Center
+                receipt += "Happy Herbivore\n";
+                receipt += "Order #" + pickupNumber + "\n";
+                receipt += "\x1B\x61\x00";  // Left
+                receipt += "------------------------------------\n";
+                
+                items.forEach(item => {
+                    const line = item.qty + 'x ' + item.name;
+                    const padLen = 36 - (item.price * item.qty).toFixed(2).length - 6;
+                    receipt += line.padEnd(padLen, ' ') + ' EUR ' + (item.price * item.qty).toFixed(2) + "\n";
+                });
+                
+                receipt += "------------------------------------\n";
+                receipt += 'Totaal:'.padEnd(28, ' ') + ' EUR ' + total.toFixed(2) + "\n";
+                receipt += "\n\n";
+                receipt += "Ophaalnummer: " + pickupNumber + "\n";
+                receipt += "Bedankt voor uw bezoek!\n";
+                receipt += "\n\n\n\n\n";
+                receipt += "\x1D\x56\x00";  // Cut
+
+                const encoder = new TextEncoder();
+                await device.transferOut(1, encoder.encode(receipt));
+                
+                console.log('Bonnetje geprint!');
+            } catch (error) {
+                console.log('USB print fout: ' + error.message);
+                // Continue anyway - order is already saved
             }
         }
 
