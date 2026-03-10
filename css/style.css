@@ -59,16 +59,16 @@ button {
   min-height: 100%;
   display: grid;
   place-items: center;
-  padding: 0;
+  padding: 10px;
 }
 
 .kiosk__device {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   border-radius: 0;
   overflow: hidden;
   background: white;
-  box-shadow: var(--shadow);
+  box-shadow: none;
   position: relative;
 }
 
