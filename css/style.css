@@ -26,11 +26,32 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
 body {
   height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--orange);
+  font-family: var(--font-body);
+  color: var(--darkBlue);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+main.kiosk {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 body {
@@ -47,17 +68,18 @@ button {
 }
 
 .kiosk {
-  min-height: 100%;
-  display: grid;
-  place-items: center;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0;
   padding: 0;
+  display: block;
 }
 
 .kiosk__device {
   width: 100vw;
   height: 100vh;
-  max-width: 2000px;
-  max-height: 1500px;
+  max-width: none;
+  max-height: none;
   border-radius: 0;
   overflow: hidden;
   background: white;
@@ -83,8 +105,8 @@ button {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 18px 16px 16px;
-  gap: 14px;
+  padding: 0;
+  gap: 10px;
 }
 
 .screen__content--flush {
