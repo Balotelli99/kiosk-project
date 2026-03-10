@@ -132,14 +132,24 @@ button {
   top: -10px;
   left: -20px;
   right: -20px;
-  height: 190px;
-  background-image: url("../assets/img/veggies-top.png");
+  height: 350px;
+  background-image: url("images/image.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top center;
   opacity: 0.95;
   pointer-events: none;
   z-index: 0;
+  animation: veggiesFloat 4s ease-in-out infinite;
+}
+
+@keyframes veggiesFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
 }
 
 .brand {

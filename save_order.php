@@ -24,6 +24,7 @@ try {
     $orderId = $conn->insert_id;
 
     $total = 0;
+    $orderItems = [];
 
     // 3. PRODUCTEN GROEPEREN (Dit voorkomt de 'Duplicate entry' fout)
     // We maken van [14, 14, 15] een lijstje: Product 14 (2x) en Product 15 (1x)
@@ -31,11 +32,13 @@ try {
 
     foreach ($counts as $id => $quantity) {
         $id = intval($id);
-        $pRes = $conn->query("SELECT price FROM products WHERE product_id = $id");
+        $pRes = $conn->query("SELECT price, name FROM products WHERE product_id = $id");
         
         if ($p = $pRes->fetch_assoc()) {
             $price = $p['price'];
+            $productName = $p['name'];
             $total += ($price * $quantity);
+            $orderItems[] = ['name' => $productName, 'qty' => $quantity, 'price' => $price];
 
             // We voeren het product nu SLECHTS ÉÉN KEER in per order.
             // De database accepteert dit omdat de combinatie (order_id, product_id) nu uniek blijft.
@@ -48,9 +51,54 @@ try {
     // 4. Totaalprijs updaten
     $conn->query("UPDATE orders SET price_total = $total WHERE order_id = $orderId");
 
-    echo json_encode(['success' => true, 'pickup_number' => $pickup]);
+    // 5. Bon printen
+    $printResult = printReceipt($pickup, $orderItems, $total);
+
+    echo json_encode(['success' => true, 'pickup_number' => $pickup, 'printed' => $printResult['success']]);
 
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Server fout: ' . $e->getMessage()]);
+}
+
+// Functie om bon te printen
+function printReceipt($pickupNumber, $items, $total) {
+    $PRINTER_HOST = '192.168.1.100';
+    $PRINTER_PORT = 9100;
+    
+    // Bouw receipt tekst
+    $receipt = "\x1B\x40";  // Initialize printer
+    $receipt .= "\n\n";
+    $receipt .= "\x1B\x61\x01";  // Center align
+    $receipt .= "Happy Herbivore\n";
+    $receipt .= "Order #$pickupNumber\n";
+    $receipt .= "\x1B\x61\x00";  // Left align
+    $receipt .= "------------------------------------\n";
+    
+    foreach ($items as $item) {
+        $line = $item['qty'] . 'x ' . $item['name'];
+        $lineLen = 36 - strlen($item['price']) - 6; // buffer for price
+        $line = str_pad($line, $lineLen, ' ', STR_PAD_RIGHT);
+        $receipt .= $line . ' EUR ' . number_format($item['price'] * $item['qty'], 2) . "\n";
+    }
+    
+    $receipt .= "------------------------------------\n";
+    $receipt .= str_pad('Totaal:', 28, ' ', STR_PAD_RIGHT) . ' EUR ' . number_format($total, 2) . "\n";
+    $receipt .= "\n\n";
+    $receipt .= "Ophaalnummer: $pickupNumber\n";
+    $receipt .= "Bedankt voor uw bezoek!\n";
+    $receipt .= "\n\n\n";
+    $receipt .= "\x1D\x56\x00";  // Cut paper
+    
+    // Verzend naar printer
+    $socket = @fsockopen($PRINTER_HOST, $PRINTER_PORT, $errno, $errstr, 5);
+    
+    if ($socket) {
+        fwrite($socket, $receipt);
+        usleep(500000);
+        fclose($socket);
+        return ['success' => true];
+    }
+    
+    return ['success' => false, 'error' => $errstr];
 }
 ?>
