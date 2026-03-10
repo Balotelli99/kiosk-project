@@ -115,6 +115,13 @@ while($row = $res->fetch_assoc()) {
 
         async function checkout() {
             if (cartIds.length === 0) return alert("<?php echo t('cart_empty'); ?>");
+            
+            // Show loading
+            const btn = document.querySelector('.btn--purple');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Even geduld...';
+            btn.disabled = true;
+            
             try {
                 // First, build order summary for receipt
                 const counts = {};
@@ -141,14 +148,28 @@ while($row = $res->fetch_assoc()) {
                     sessionStorage.setItem('order_time', new Date().toISOString());
                     
                     // Print receipt via USB
-                    await printReceiptUSB(result.pickup_number, summary, total);
+                    try {
+                        await printReceiptUSB(result.pickup_number, summary, total);
+                    } catch(e) {
+                        console.log('Print cancelled or failed');
+                    }
+                    
+                    // Show success message
+                    btn.innerHTML = '✓ Bestelling opgeslagen!';
                     
                     sessionStorage.removeItem('kiosk_cart');
+                    
+                    // Brief delay to show success, then redirect
+                    await new Promise(r => setTimeout(r, 800));
                     window.location.href = 'thanks.php?lang=<?php echo $lang; ?>';
                 } else {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
                     alert("Fout: " + result.error);
                 }
             } catch (e) {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
                 alert("Kon geen verbinding maken met de server.");
             }
         }
@@ -158,7 +179,7 @@ while($row = $res->fetch_assoc()) {
             try {
                 if (!navigator.usb) {
                     console.log('WebUSB niet ondersteund, geen bon geprint');
-                    return;
+                    return false;
                 }
 
                 // Request USB device (Xprinter vendor ID: 0x0483)
@@ -197,9 +218,12 @@ while($row = $res->fetch_assoc()) {
                 await device.transferOut(1, encoder.encode(receipt));
                 
                 console.log('Bonnetje geprint!');
+                return true;
             } catch (error) {
                 console.log('USB print fout: ' + error.message);
-                // Continue anyway - order is already saved
+                // Show message to user
+                alert('Let op: Bonprinter niet aangesloten. Uw bestelling is wel opgeslagen!');
+                return false;
             }
         }
 
